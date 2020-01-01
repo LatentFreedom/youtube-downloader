@@ -24,13 +24,13 @@ class YoutubeDownloader:
 		
 
 	def download_playlist(self,url,video=True):
-		
+
 		playlist = Playlist(url)
 		print("Playlist: " + playlist.title + " | total = " + str(len(playlist.video_urls)))
 
 		for video in playlist.videos:
 			title = video.title.replace('/','+')
-			
+
 			if video:
 				# Download Video Only
 				files = os.listdir(self.video_save_path)
@@ -53,20 +53,20 @@ class YoutubeDownloader:
 		print(video_stream)
 		print(audio_stream)
 		# Download
-		video_stream.download(TMP_PATH,filename="tmp_video")
-		audio_stream.download(TMP_PATH,filename="tmp_audio")
+		video_stream.download(self.tmp_save_path,filename="tmp_video")
+		audio_stream.download(self.tmp_save_path,filename="tmp_audio")
 		# Combine
-		video_stream = ffmpeg.input(TMP_PATH+'tmp_video.mp4')
-		audio_stream = ffmpeg.input(TMP_PATH+'tmp_audio.mp4')
-		ffmpeg.output(audio_stream, video_stream, SAVE_PATH+video.title+'.mp4').run()
+		video_stream = ffmpeg.input(self.tmp_save_path+'/tmp_video.mp4')
+		audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
+		ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+video.title+'.mp4').run()
 
 	def download_audio(self,video):
 		files = os.listdir(self.audio_save_path)
 		# Get Audio
 		audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
 		# Download
-		audio_stream.download(TMP_PATH,filename="tmp_audio")
-		ffmpeg.output(audio_stream, None, AUDIO_SAVE_PATH+video.title+'.mp3').run()
+		audio_stream.download(self.tmp_save_path,filename="tmp_audio")
+		ffmpeg.output(audio_stream, None, self.audio_save_path+"/"+video.title+'.mp3').run()
 
 if __name__ == '__main__':
 	ytd = YoutubeDownloader()

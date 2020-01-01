@@ -15,5 +15,5 @@ source menv/bin/activate
 ```
 pip install --upgrade pip
 pip install -r requirements.txt
-python app.py
+python app.py 'https://www.youtbe.com/playlist?list=???????????'
 ```
