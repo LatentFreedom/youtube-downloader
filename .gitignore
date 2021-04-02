@@ -1,0 +1,8 @@
+.DS_Store
+.vscode
+logs
+*.pyc
+menv
+videos
+tmp
+__pycache__
