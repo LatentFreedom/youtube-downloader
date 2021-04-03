@@ -3,6 +3,7 @@ import sys
 from pytube import YouTube
 from pytube import Playlist
 import ffmpeg
+import argparse
 
 # https://python-pytube.readthedocs.io/en/latest/api.html
 # https://python-pytube.readthedocs.io/en/latest/user/streams.html
@@ -11,19 +12,47 @@ import ffmpeg
 class YoutubeDownloader:
 
 	def __init__(self):
-		self.audio_save_path = self.directory = os.path.expanduser("~/software/scrapers/youtube-downloader/audio")
-		self.video_save_path = self.directory = os.path.expanduser("~/software/scrapers/youtube-downloader/videos")
-		self.tmp_save_path = self.directory = os.path.expanduser("~/software/scrapers/youtube-downloader/tmp")
+		self.audio_save_path = os.path.expanduser("~/software/scrapers/youtube-downloader/audio")
+		self.video_save_path = os.path.expanduser("~/software/scrapers/youtube-downloader/videos")
+		self.tmp_save_path = os.path.expanduser("~/software/scrapers/youtube-downloader/tmp")
 
 	def run(self):
-		if len(sys.argv) != 2:
-			print("Need playlist url")
 
-		url = sys.argv[1]
-		self.download_playlist(url)
+		parser = argparse.ArgumentParser()
+		parser.add_argument("-u", "--url", dest="url", help="Url")
+		parser.add_argument("-a", "--audio", help="Save As Audio", action="store_true")
+		parser.add_argument("-p", "--playlist", help="Playlist Url Provided", action="store_true")
+		args = parser.parse_args()
+
+		url = args.url
+		download_video = False if args.audio == True else True
+		
+		if args.playlist != None:
+			self.download_playlist(url,download_video)
+		else:
+			self.download_single_video(url,download_video)
+
+	def download_single_video(self,url,download_video):
+		video = YouTube(url)
+		print(video)
+		print("Video: " + video.title + " | Length = " + str(video.length))
+
+		title = video.title.replace('/','+')
+		if download_video:
+			# Download Video Only
+			files = os.listdir(self.video_save_path)
+			if title + ".mp4" in files:
+				print("Already downloaded: " + title)
+			self.download_video(video)
+		else:
+			# Download Audio Only
+			files = os.listdir(self.audio_save_path)
+			if video.title+".mp3" in files:
+				print("Already downloaded: " + title)
+			self.download_audio(video)
 		
 
-	def download_playlist(self,url,video=True):
+	def download_playlist(self,url,download_video):
 
 		playlist = Playlist(url)
 		print("Playlist: " + playlist.title + " | total = " + str(len(playlist.video_urls)))
@@ -31,7 +60,7 @@ class YoutubeDownloader:
 		for video in playlist.videos:
 			title = video.title.replace('/','+')
 
-			if video:
+			if download_video:
 				# Download Video Only
 				files = os.listdir(self.video_save_path)
 				if title + ".mp4" in files:
@@ -55,18 +84,20 @@ class YoutubeDownloader:
 		# Download
 		video_stream.download(self.tmp_save_path,filename="tmp_video")
 		audio_stream.download(self.tmp_save_path,filename="tmp_audio")
-		# Combine
+		# Combine & Format
 		video_stream = ffmpeg.input(self.tmp_save_path+'/tmp_video.mp4')
 		audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
 		ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+video.title+'.mp4').run()
 
 	def download_audio(self,video):
-		files = os.listdir(self.audio_save_path)
 		# Get Audio
 		audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
 		# Download
 		audio_stream.download(self.tmp_save_path,filename="tmp_audio")
-		ffmpeg.output(audio_stream, None, self.audio_save_path+"/"+video.title+'.mp3').run()
+		# Format
+		audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
+		ffmpeg.output(audio_stream, self.audio_save_path+"/"+video.title+'.mp3').run()
+
 
 if __name__ == '__main__':
 	ytd = YoutubeDownloader()

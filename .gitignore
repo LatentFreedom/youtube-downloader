@@ -3,6 +3,7 @@
 logs
 *.pyc
 menv
+audio
 videos
 tmp
 __pycache__
