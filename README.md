@@ -19,11 +19,13 @@ pip install -r requirements.txt
 
 4. Running the app
 ```
-usage: app.py [-h] [-u URL] [-a] [-p]
+usage: app.py [-h] [-u URL] [-a] [-p] [-o OUTPUTPATH]
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -u URL, --url URL  Url
-  -a, --audio        Save As Audio
-  -p, --playlist     Playlist Url Provided
+  -h, --help            show this help message and exit
+  -u URL, --url URL     Url
+  -a, --audio           Save As Audio
+  -p, --playlist        Playlist Url Provided
+  -o OUTPUTPATH, --output OUTPUTPATH
+                        Path to save output
 ```
