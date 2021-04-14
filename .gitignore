@@ -3,6 +3,8 @@
 logs
 *.pyc
 menv
+wenv
+lenv
 audio
 videos
 tmp
