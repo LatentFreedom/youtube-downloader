@@ -36,7 +36,7 @@ class YoutubeDownloader:
 		if args.outputpath != None:
 			self.video_save_path = os.path.expanduser(args.outputpath)
 			self.audio_save_path = os.path.expanduser(args.outputpath)
-		
+
 		if args.playlist != None:
 			self.download_playlist(url,download_video)
 		else:
@@ -53,13 +53,17 @@ class YoutubeDownloader:
 			# Download Video Only
 			files = os.listdir(self.video_save_path)
 			if title + ".mp4" in files:
-				print("Already downloaded: " + title)
+				if os.stat(title + ".mp4").st_size > 0:
+					print("Already downloaded: " + title)
+					return
 			self.download_video(video)
 		else:
 			# Download Audio Only
 			files = os.listdir(self.audio_save_path)
 			if title + ".mp3" in files:
-				print("Already downloaded: " + title)
+				if os.stat(title + ".mp3").st_size > 0:
+					print("Already downloaded: " + title)
+					return
 			self.download_audio(video)
 		
 
@@ -76,41 +80,51 @@ class YoutubeDownloader:
 				# Download Video Only
 				files = os.listdir(self.video_save_path)
 				if title + ".mp4" in files:
-					print("Already downloaded: " + title)
-					continue
+					if os.stat('./videos/'+title + ".mp4").st_size > 0:
+						print("Already downloaded: " + title)
+						continue
 				self.download_video(video)
 			else:
 				# Download Audio Only
 				files = os.listdir(self.audio_save_path)
 				if title + ".mp3" in files:
-					print("Already downloaded: " + title)
-					continue
+					if os.stat('./videos/'+title + ".mp4").st_size > 0:
+						print("Already downloaded: " + title)
+						continue
 				self.download_audio(video)
 
 	def download_video(self,video):
-		title = self.format_title(video.title)
-		# Get Audio & Video
-		video_stream = video.streams.filter(file_extension='mp4',adaptive=True).first()
-		audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
-		print(video_stream)
-		print(audio_stream)
-		# Download
-		video_stream.download(self.tmp_save_path,filename="tmp_video")
-		audio_stream.download(self.tmp_save_path,filename="tmp_audio")
-		# Combine & Format
-		video_stream = ffmpeg.input(self.tmp_save_path+'/tmp_video.mp4')
-		audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
-		ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+title+'.mp4').run()
+		try:
+			title = self.format_title(video.title)
+			# Get Audio & Video
+			video_stream = video.streams.filter(file_extension='mp4',adaptive=True).first()
+			audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
+			print(video_stream)
+			print(audio_stream)
+			# Download
+			video_stream.download(self.tmp_save_path,filename="tmp_video")
+			audio_stream.download(self.tmp_save_path,filename="tmp_audio")
+			# Combine & Format
+			video_stream = ffmpeg.input(self.tmp_save_path+'/tmp_video.mp4')
+			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
+			ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+title+'.mp4').run()
+		except Exception as e:
+			print("[ERROR] Could not download: "+title)
+			os.remove(self.video_save_path+"/"+title+'.mp4')
 
 	def download_audio(self,video):
-		title = self.format_title(video.title)
-		# Get Audio
-		audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
-		# Download
-		audio_stream.download(self.tmp_save_path,filename="tmp_audio")
-		# Format
-		audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
-		ffmpeg.output(audio_stream, self.audio_save_path+"/"+title+'.mp3').run()
+		try:
+			title = self.format_title(video.title)
+			# Get Audio
+			audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
+			# Download
+			audio_stream.download(self.tmp_save_path,filename="tmp_audio")
+			# Format
+			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
+			ffmpeg.output(audio_stream, self.audio_save_path+"/"+title+'.mp3').run()
+		except Exception as e:
+			print("[ERROR] Could not download: "+title)
+			os.remove(self.audio_save_path+"/"+title+'.mp3')
 
 
 if __name__ == '__main__':
