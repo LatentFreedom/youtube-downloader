@@ -110,7 +110,8 @@ class YoutubeDownloader:
 			ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+title+'.mp4').run()
 		except Exception as e:
 			print("[ERROR] Could not download: "+title)
-			os.remove(self.video_save_path+"/"+title+'.mp4')
+			if os.path.exists(self.video_save_path+"/"+title+'.mp4'):
+				os.remove(self.video_save_path+"/"+title+'.mp4')
 
 	def download_audio(self,video):
 		try:
@@ -124,7 +125,8 @@ class YoutubeDownloader:
 			ffmpeg.output(audio_stream, self.audio_save_path+"/"+title+'.mp3').run()
 		except Exception as e:
 			print("[ERROR] Could not download: "+title)
-			os.remove(self.audio_save_path+"/"+title+'.mp3')
+			if os.path.exists(self.audio_save_path+"/"+title+'.mp3'):
+				os.remove(self.audio_save_path+"/"+title+'.mp3')
 
 
 if __name__ == '__main__':
