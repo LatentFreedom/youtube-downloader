@@ -1,5 +1,6 @@
 import os
 import sys
+import ssl
 from pytube import YouTube
 from pytube import Playlist
 import ffmpeg
@@ -114,5 +115,6 @@ class YoutubeDownloader:
 
 
 if __name__ == '__main__':
-	ytd = YoutubeDownloader()
-	ytd.run()
+    ssl._create_default_https_context = ssl._create_stdlib_context
+    ytd = YoutubeDownloader()
+    ytd.run()
