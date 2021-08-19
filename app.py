@@ -53,7 +53,7 @@ class YoutubeDownloader:
 			# Download Video Only
 			files = os.listdir(self.video_save_path)
 			if title + ".mp4" in files:
-				if os.stat(title + ".mp4").st_size > 0:
+				if os.stat(self.video_save_path + title + ".mp4").st_size > 0:
 					print("Already downloaded: " + title)
 					return
 			self.download_video(video)
@@ -61,7 +61,7 @@ class YoutubeDownloader:
 			# Download Audio Only
 			files = os.listdir(self.audio_save_path)
 			if title + ".mp3" in files:
-				if os.stat(title + ".mp3").st_size > 0:
+				if os.stat(self.audio_save_path + title + ".mp3").st_size > 0:
 					print("Already downloaded: " + title)
 					return
 			self.download_audio(video)
@@ -80,7 +80,7 @@ class YoutubeDownloader:
 				# Download Video Only
 				files = os.listdir(self.video_save_path)
 				if title + ".mp4" in files:
-					if os.stat('./videos/'+title + ".mp4").st_size > 0:
+					if os.stat(self.video_save_path + title + ".mp4").st_size > 0:
 						print("Already downloaded: " + title)
 						continue
 				self.download_video(video)
@@ -88,7 +88,7 @@ class YoutubeDownloader:
 				# Download Audio Only
 				files = os.listdir(self.audio_save_path)
 				if title + ".mp3" in files:
-					if os.stat('./videos/'+title + ".mp4").st_size > 0:
+					if os.stat(self.audio_save_path+title + ".mp4").st_size > 0:
 						print("Already downloaded: " + title)
 						continue
 				self.download_audio(video)
@@ -102,8 +102,8 @@ class YoutubeDownloader:
 			print(video_stream)
 			print(audio_stream)
 			# Download
-			video_stream.download(self.tmp_save_path,filename="tmp_video")
-			audio_stream.download(self.tmp_save_path,filename="tmp_audio")
+			video_stream.download(self.tmp_save_path,filename="tmp_video.mp4")
+			audio_stream.download(self.tmp_save_path,filename="tmp_audio.mp4")
 			# Combine & Format
 			video_stream = ffmpeg.input(self.tmp_save_path+'/tmp_video.mp4')
 			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
