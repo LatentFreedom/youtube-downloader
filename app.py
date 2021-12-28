@@ -15,6 +15,9 @@ class YoutubeDownloader:
 		self.audio_save_path = os.path.expanduser("~/software/scrapers/youtube-downloader/audio")
 		self.video_save_path = os.path.expanduser("~/software/scrapers/youtube-downloader/videos")
 		self.tmp_save_path = os.path.expanduser("~/software/scrapers/youtube-downloader/tmp")
+		self.proxies = {
+			'https':'10.0.1.4'
+		}
 
 	def format_title(self,title):
 		title = title.replace('/','+')
@@ -109,7 +112,7 @@ class YoutubeDownloader:
 			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
 			ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+title+'.mp4').run()
 		except Exception as e:
-			print("[ERROR] Could not download: "+title)
+			print("[ERROR] Could not download: "+title+"\n"+str(e))
 			if os.path.exists(self.video_save_path+"/"+title+'.mp4'):
 				os.remove(self.video_save_path+"/"+title+'.mp4')
 
@@ -124,7 +127,7 @@ class YoutubeDownloader:
 			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
 			ffmpeg.output(audio_stream, self.audio_save_path+"/"+title+'.mp3').run()
 		except Exception as e:
-			print("[ERROR] Could not download: "+title)
+			print("[ERROR] Could not download: "+title+"\n"+str(e))
 			if os.path.exists(self.audio_save_path+"/"+title+'.mp3'):
 				os.remove(self.audio_save_path+"/"+title+'.mp3')
 
