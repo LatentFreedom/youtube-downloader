@@ -83,7 +83,7 @@ class YoutubeDownloader:
 				# Download Video Only
 				files = os.listdir(self.video_save_path)
 				if title + ".mp4" in files:
-					if os.stat(self.video_save_path + title + ".mp4").st_size > 0:
+					if os.stat(self.video_save_path + '/' + title + ".mp4").st_size > 0:
 						print("Already downloaded: " + title)
 						continue
 				self.download_video(video)
@@ -91,7 +91,7 @@ class YoutubeDownloader:
 				# Download Audio Only
 				files = os.listdir(self.audio_save_path)
 				if title + ".mp3" in files:
-					if os.stat(self.audio_save_path+title + ".mp4").st_size > 0:
+					if os.stat(self.audio_save_path + '/' + title + ".mp3").st_size > 0:
 						print("Already downloaded: " + title)
 						continue
 				self.download_audio(video)
@@ -112,9 +112,9 @@ class YoutubeDownloader:
 			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
 			ffmpeg.output(audio_stream, video_stream, self.video_save_path+"/"+title+'.mp4').run()
 		except Exception as e:
-			print("[ERROR] Could not download: "+title+"\n"+str(e))
-			if os.path.exists(self.video_save_path+"/"+title+'.mp4'):
-				os.remove(self.video_save_path+"/"+title+'.mp4')
+			print("[ERROR] Could not download: " + title + "\n" + str(e))
+			if os.path.exists(self.video_save_path+"/" + title + '.mp4'):
+				os.remove(self.video_save_path + "/" + title + '.mp4')
 
 	def download_audio(self,video):
 		try:
@@ -122,14 +122,14 @@ class YoutubeDownloader:
 			# Get Audio
 			audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
 			# Download
-			audio_stream.download(self.tmp_save_path,filename="tmp_audio")
+			audio_stream.download(self.tmp_save_path,filename="tmp_audio.mp4")
 			# Format
-			audio_stream = ffmpeg.input(self.tmp_save_path+'/tmp_audio.mp4')
-			ffmpeg.output(audio_stream, self.audio_save_path+"/"+title+'.mp3').run()
+			audio_stream = ffmpeg.input(self.tmp_save_path + '/tmp_audio.mp4')
+			ffmpeg.output(audio_stream, self.audio_save_path + "/" + title + '.mp3').run()
 		except Exception as e:
-			print("[ERROR] Could not download: "+title+"\n"+str(e))
-			if os.path.exists(self.audio_save_path+"/"+title+'.mp3'):
-				os.remove(self.audio_save_path+"/"+title+'.mp3')
+			print("[ERROR] Could not download: " + title + "\n" + str(e))
+			if os.path.exists(self.audio_save_path + "/" + title + '.mp3'):
+				os.remove(self.audio_save_path + "/" + title + '.mp3')
 
 
 if __name__ == '__main__':
