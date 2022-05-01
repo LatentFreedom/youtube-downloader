@@ -2,8 +2,7 @@
 .vscode
 logs
 *.pyc
-menv
-wenv
+env
 lenv
 audio
 videos

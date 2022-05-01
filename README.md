@@ -16,7 +16,7 @@ source menv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
-
+ 
 4. Running the app
 ```
 usage: app.py [-h] [-u URL] [-a] [-p] [-o OUTPUTPATH]
