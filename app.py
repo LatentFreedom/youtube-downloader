@@ -49,7 +49,7 @@ class YoutubeDownloader:
 			self.download_single_video(url,download_video)
 
 	def download_single_video(self,url,download_video):
-		video = YouTube(url,use_oauth=True,allow_oauth_cache=False)
+		video = YouTube(url,use_oauth=True,allow_oauth_cache=True)
 		print("Video: " + video.title + " | Length = " + str(video.length))
 
 		title = self.format_title(video.title)
