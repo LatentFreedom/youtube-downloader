@@ -31,3 +31,10 @@ optional arguments:
   -o OUTPUTPATH, --output OUTPUTPATH
                         Path to save output
 ```
+
+## 5. Trouble shooting
+Make sure ffmpeg is installed on your system. ffmpeg-python is an API that needs to use the ffmpeg program.
+
+```
+sudo apt install ffmpeg
+```

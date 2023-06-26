@@ -1,5 +1,4 @@
 import os
-import sys
 from pytube import YouTube
 from pytube import Playlist
 import ffmpeg
@@ -33,6 +32,10 @@ class YoutubeDownloader:
 		parser.add_argument("-o", "--output", help="Path to save output", dest="outputpath")
 		args = parser.parse_args()
 
+		if args.url == None:
+			print("Missing url and flag -u or --url. Use -h for help")
+			return
+		
 		url = args.url
 		download_video = False if args.audio == True else True
 
@@ -40,14 +43,13 @@ class YoutubeDownloader:
 			self.video_save_path = os.path.expanduser(args.outputpath)
 			self.audio_save_path = os.path.expanduser(args.outputpath)
 
-		if args.playlist != None:
+		if args.playlist == True:
 			self.download_playlist(url,download_video)
 		else:
 			self.download_single_video(url,download_video)
 
 	def download_single_video(self,url,download_video):
-		video = YouTube(url)
-		print(video)
+		video = YouTube(url,use_oauth=True,allow_oauth_cache=False)
 		print("Video: " + video.title + " | Length = " + str(video.length))
 
 		title = self.format_title(video.title)
@@ -86,7 +88,7 @@ class YoutubeDownloader:
 					if os.stat(self.video_save_path + '/' + title + ".mp4").st_size > 0:
 						print("Already downloaded: " + title)
 						continue
-				self.download_video(video)
+				self.download_single_video(video.watch_url,download_video)
 			else:
 				# Download Audio Only
 				files = os.listdir(self.audio_save_path)
@@ -102,8 +104,6 @@ class YoutubeDownloader:
 			# Get Audio & Video
 			video_stream = video.streams.filter(file_extension='mp4',adaptive=True).first()
 			audio_stream = video.streams.filter(only_audio=True,adaptive=True).first()
-			print(video_stream)
-			print(audio_stream)
 			# Download
 			video_stream.download(self.tmp_save_path,filename="tmp_video.mp4")
 			audio_stream.download(self.tmp_save_path,filename="tmp_audio.mp4")
